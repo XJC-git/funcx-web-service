@@ -1,6 +1,5 @@
 dockers/secrets
 dockers/certs
-conf/app.conf
 *~
 *.pyc
 parsl.egg-info/*

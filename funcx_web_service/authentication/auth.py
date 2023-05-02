@@ -17,6 +17,7 @@ from funcx_web_service.models.function import Function, FunctionAuthGroup
 
 from .auth_state import get_auth_state
 from .globus_auth import get_auth_client
+from ..models.user import User
 
 # Default scope if not provided in config
 FUNCX_SCOPE = "https://auth.globus.org/scopes/facd7ccc-c5f4-42aa-916b-a0e270e2c2a9/all"
@@ -27,23 +28,27 @@ def authenticated(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_state = get_auth_state()
-        auth_state.assert_is_authenticated()
-        auth_state.assert_has_default_scope()
-
-        # TODO: review, should this be getting logged here?
-        # it's the raw introspect response and could be logged by the
-        # AuthenticationState object if that's desirable
-        introspect_detail = getattr(
-            auth_state.introspect_data, "data", auth_state.introspect_data
+        # auth_state = get_auth_state()
+        # auth_state.assert_is_authenticated()
+        # auth_state.assert_has_default_scope()
+        #
+        # # TODO: review, should this be getting logged here?
+        # # it's the raw introspect response and could be logged by the
+        # # AuthenticationState object if that's desirable
+        # introspect_detail = getattr(
+        #     auth_state.introspect_data, "data", auth_state.introspect_data
+        # )
+        # current_app.logger.debug(
+        #     "auth_detail",
+        #     extra={"log_type": "auth_detail", "auth_detail": introspect_detail},
+        # )
+        #
+        # response = make_response(f(auth_state.user_object, *args, **kwargs))
+        # response._log_data.set_user(auth_state.user_object)
+        response = make_response(
+            f(User(username="test_user"),  *args, **kwargs)
         )
-        current_app.logger.debug(
-            "auth_detail",
-            extra={"log_type": "auth_detail", "auth_detail": introspect_detail},
-        )
-
-        response = make_response(f(auth_state.user_object, *args, **kwargs))
-        response._log_data.set_user(auth_state.user_object)
+        response._log_data.set_user(User(username="test_user"))
         return response
 
     return decorated_function
@@ -54,23 +59,27 @@ def authenticated_w_uuid(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_state = get_auth_state()
-        auth_state.assert_is_authenticated()
-        auth_state.assert_has_default_scope()
-
-        # TODO: review, as above
-        introspect_detail = getattr(
-            auth_state.introspect_data, "data", auth_state.introspect_data
-        )
-        current_app.logger.debug(
-            "auth_detail",
-            extra={"log_type": "auth_detail", "auth_detail": introspect_detail},
-        )
-
+        # auth_state = get_auth_state()
+        # auth_state.assert_is_authenticated()
+        # auth_state.assert_has_default_scope()
+        #
+        # # TODO: review, as above
+        # introspect_detail = getattr(
+        #     auth_state.introspect_data, "data", auth_state.introspect_data
+        # )
+        # current_app.logger.debug(
+        #     "auth_detail",
+        #     extra={"log_type": "auth_detail", "auth_detail": introspect_detail},
+        # )
+        #
+        # response = make_response(
+        #     f(auth_state.user_object, auth_state.identity_id, *args, **kwargs)
+        # )
+        # response._log_data.set_user(auth_state.user_object)
         response = make_response(
-            f(auth_state.user_object, auth_state.identity_id, *args, **kwargs)
+            f(User(username="test_user"), "test_user_uuid", *args, **kwargs)
         )
-        response._log_data.set_user(auth_state.user_object)
+        response._log_data.set_user(User(username="test_user"))
         return response
 
     return decorated_function

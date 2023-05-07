@@ -315,8 +315,10 @@ def get_redis_client():
         redis_client = redis.StrictRedis(
             host=app.config["REDIS_HOST"],
             port=app.config["REDIS_PORT"],
+            password=f'{app.config["REDIS_USER"]}:{app.config["REDIS_PASSWORD"]}',
             decode_responses=True,
         )
+        redis_client.set('foo', 'bar')
         return redis_client
     except Exception as e:
         print(e)

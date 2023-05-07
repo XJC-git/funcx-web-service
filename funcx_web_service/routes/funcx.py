@@ -78,7 +78,7 @@ def g_redis_pubsub():
         # FuncxRedisPubSub with no arguments
         if "REDIS_HOST" in app.config and "REDIS_PORT" in app.config:
             redis_client = default_redis_connection_factory(
-                f"redis://{app.config['REDIS_HOST']}:{app.config['REDIS_PORT']}"
+                f"redis://[[{app.config['REDIS_USER']}]:[{app.config['REDIS_PASSWORD']}]]@{app.config['REDIS_HOST']}:{app.config['REDIS_PORT']}"
             )
         else:
             redis_client = None
